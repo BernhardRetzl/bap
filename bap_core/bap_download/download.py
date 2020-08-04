@@ -1,7 +1,6 @@
 import os
 import glob
 import gzip
-import shutil
 from Bio import SeqIO
 from ftplib import FTP
 import datetime
@@ -46,10 +45,9 @@ def download_item(ftp_path, temp_path, plant_name):
 
 
 def unzip_item(local_path):
-    import gzip
-    input = gzip.GzipFile(local_path, 'rb')
-    s = input.read()
-    input.close()
+    my_input = gzip.GzipFile(local_path, 'rb')
+    s = my_input.read()
+    my_input.close()
     output = open(local_path, 'wb')
     output.write(s)
     output.close()

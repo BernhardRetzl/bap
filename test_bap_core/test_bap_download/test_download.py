@@ -2,12 +2,13 @@ import bap_core.bap_download.download
 
 
 def test_next_ftp_path_1():
-
     actual = bap_core.bap_download.download.next_ftp_path(database='genomes/genbank/plant/', out_path='')
     assert actual.startswith('genomes/genbank/plant/A')
 
-def test_2():
+
+def test_next_ftp_path_2():
     from ftplib import FTP
+
     def login_and_cwd(path):
         my_ftp = FTP('ftp.ncbi.nlm.nih.gov')
         my_ftp.login()
@@ -19,4 +20,3 @@ def test_2():
     already_done_list = list()
     plant_list = sorted([i for i in plant_list if i not in already_done_list])
     assert len(plant_list) >= 706
-
