@@ -15,10 +15,12 @@ def login_and_cwd(path):
     return my_ftp
 
 
-def next_ftp_path(database, out_path):
+def next_ftp_path(database, out_path, temp_path):
     plant_list = login_and_cwd(database).nlst()
     plant_list = [i for i in plant_list if '.txt' not in i]
-    already_done_list = [i.split(os.sep)[0] for i in glob.glob(out_path+os.sep+'*')]
+    already_done_list = [i.split(os.sep)[-1] for i in glob.glob(out_path+'*')] +\
+                        [i.split(os.sep)[-1] for i in glob.glob(temp_path + '*')]
+
     plant_list = sorted([i for i in plant_list if i not in already_done_list])
     print(len(plant_list))
     if plant_list:
@@ -86,15 +88,16 @@ def translate(local_path, plant_name, out_path):
         for i in to_write:
             out_file.write(i)
     os.remove(local_path)
+    os.rmdir(os.sep.join(local_path.split(os.sep)[:-1]))
     return cys_rich_sequence_counter, not_cys_rich_sequence_counter
 
 
-def update_log_file(log_file_path, plant_name, size, cys_rich, rest):
-    with open(log_file_path+os.path+'\\log_file.txt', 'at') as out_file:
-        out_file.write('\t'.join([plant_name, str(size), str(cys_rich), str(rest)])+'\n')
+def update_log_file(local_path, out_path, plant_name, size, cys_rich, rest):
+    with open(out_path+os.sep+plant_name+os.sep+plant_name+'.log', 'wt') as out_file:
+        out_file.write('\t'.join([plant_name, str(size), str(cys_rich), str(rest), local_path.split('/')[-1]]))
 
 
-def ftp_downloader(database, temp_path, out_path, log_file_path):
+def ftp_downloader(database, temp_path, out_path):
     """Downloads genomes or transcriptomes from NCBI's FTP-server. At the beginning the temporary path (temp_path) and
     the out_path are checked if the genome/transcriptome was already downloaded or if an error file was created. If yes
     the genome/transcriptome will be skipped.
@@ -104,13 +107,12 @@ def ftp_downloader(database, temp_path, out_path, log_file_path):
     FTP-server ('ftp.ncbi.nlm.nih.gov').
     temp_path (str): path (starting from the root directory) where temporary files can be stored (e.g.
     '/home/user/Data/temporary/').
-    log_file_path (str): path (starting from the root directory) where the log-file should be stored.
 
     Returns:
     In case a new entry was found in the specified folder of NCBI´s FTP server the file will be downloaded to the
-    output path (out_path) and an entry in the log-file (under log_file_path) will be appended. In case of an error
+    output path (out_path). In case of an error an empty file will be created in the temp_path"
     """
-    ftp_path = next_ftp_path(database=database, out_path=out_path)
+    ftp_path = next_ftp_path(database=database, out_path=out_path, temp_path=temp_path)
     while ftp_path:
         plant_name = ftp_path.split('/')[-1]
         print(plant_name)
@@ -118,17 +120,17 @@ def ftp_downloader(database, temp_path, out_path, log_file_path):
         if local_path:
             size = unzip_item(local_path=local_path)
             cys_rich, rest = translate(local_path=local_path, plant_name=plant_name, out_path=out_path)
-            update_log_file(log_file_path=log_file_path, plant_name=plant_name, size=size, cys_rich=cys_rich, rest=rest)
+            update_log_file(local_path=local_path, out_path=out_path,
+                            plant_name=plant_name, size=size, cys_rich=cys_rich, rest=rest)
         else:
             print('error')
-        ftp_path = next_ftp_path(database=database, out_path=out_path)
+        ftp_path = next_ftp_path(database=database, out_path=out_path, temp_path=temp_path)
 
 
 def main():
     ftp_downloader(database='genomes/genbank/plant/',
-                   temp_path='E:\\PycharmProjectData\\bap\\bap_core\\bap_downloader\\temporary',
-                   out_path='E:\\PycharmProjectData\\bap\\bap_core\\bap_downloader\\core',
-                   log_file_path='E:\\PycharmProjectData\\bap\\bap_core\\bap_downloader\\log')
+                   temp_path='/home/b/PycharmProjects/bap_data/temporary/',
+                   out_path='/home/b/PycharmProjects/bap_data/genbank/')
 
 
 if __name__ == '__main__':

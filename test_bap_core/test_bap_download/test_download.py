@@ -20,3 +20,4 @@ def test_next_ftp_path_2():
     already_done_list = list()
     plant_list = sorted([i for i in plant_list if i not in already_done_list])
     assert len(plant_list) >= 706
+
