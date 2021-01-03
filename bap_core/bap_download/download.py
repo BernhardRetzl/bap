@@ -4,8 +4,18 @@ import gzip
 from Bio import SeqIO
 from ftplib import FTP
 import datetime
+import psutil
+import time
 
 date = str(datetime.datetime.now()).split(' ')[0]
+
+
+def check_for_memory():
+    while True:
+        memory = psutil.virtual_memory().percent
+        if memory < 25:
+            return
+        time.sleep(300)
 
 
 def login_and_cwd(path):
@@ -114,6 +124,7 @@ def ftp_downloader(database, temp_path, out_path):
     """
     ftp_path = next_ftp_path(database=database, out_path=out_path, temp_path=temp_path)
     while ftp_path:
+        check_for_memory()
         plant_name = ftp_path.split('/')[-1]
         print(plant_name)
         local_path = download_item(ftp_path=ftp_path, temp_path=temp_path, plant_name=plant_name)
