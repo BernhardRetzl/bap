@@ -16,6 +16,7 @@ def check_for_memory():
         if memory < 25:
             return
         time.sleep(300)
+        print('Sleeping')
 
 
 def login_and_cwd(path):
@@ -47,6 +48,9 @@ def download_item(ftp_path, temp_path, plant_name):
         path = ftp_path+'/all_assembly_versions/'
     my_ftp = login_and_cwd(path=path)
     file = my_ftp.nlst()[0]
+    if file == 'suppressed':
+        os.mkdir(temp_path + os.sep + plant_name)
+        return
     file_path = path + file + '/' + file + '_genomic.fna.gz'
     os.mkdir(temp_path+os.sep+plant_name)
     local_path = temp_path+os.sep+plant_name+os.sep+file
