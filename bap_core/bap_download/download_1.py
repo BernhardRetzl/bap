@@ -13,10 +13,10 @@ date = str(datetime.datetime.now()).split(' ')[0]
 def check_for_memory():
     while True:
         memory = psutil.virtual_memory().percent
-        if memory < 25:
+        if memory < 35:
             return
-        time.sleep(300)
         print('Sleeping')
+        time.sleep(300)
 
 
 def login_and_cwd(path):
@@ -27,6 +27,7 @@ def login_and_cwd(path):
 
 
 def next_ftp_path(database, out_path, temp_path):
+    check_for_memory()
     plant_list = login_and_cwd(database).nlst()
     plant_list = [i for i in plant_list if '.txt' not in i]
     already_done_list = [i.split(os.sep)[-1] for i in glob.glob(out_path+'*')] +\
@@ -77,6 +78,8 @@ def translate(local_path, plant_name, out_path):
     to_write = []
     my_seq = SeqIO.parse(local_path, 'fasta')
     record_number = 0
+    os.mkdir(out_path + os.sep + plant_name)
+    handler = open(out_path+os.sep+plant_name+os.sep+local_path.split('/')[-1], 'wt')
     for record in my_seq:
         record_number += 1
         gen_bank_id = record.description.split(' ')[0]
@@ -92,15 +95,13 @@ def translate(local_path, plant_name, out_path):
                     if len(pattern) > 4:
                         numbers = '_'.join([str(record_number), str(frame_number), str(orf_number)])
                         pattern = '-' + '-'.join([str(i) for i in pattern]) + '-'
-                        to_write.append(
+                        handler.write(
                             '>'+gen_bank_id+' '+plant_name+' '+numbers+' '+pattern+'\n'+str(pro)+'\n')
                         cys_rich_sequence_counter += 1
                     else:
                         not_cys_rich_sequence_counter += 1
-    os.mkdir(out_path+os.sep+plant_name)
-    with open(out_path+os.sep+plant_name+os.sep+local_path.split('/')[-1], 'wt') as out_file:
-        for i in to_write:
-            out_file.write(i)
+
+    handler.close()
     os.remove(local_path)
     os.rmdir(os.sep.join(local_path.split(os.sep)[:-1]))
     return cys_rich_sequence_counter, not_cys_rich_sequence_counter
@@ -128,7 +129,6 @@ def ftp_downloader(database, temp_path, out_path):
     """
     ftp_path = next_ftp_path(database=database, out_path=out_path, temp_path=temp_path)
     while ftp_path:
-        check_for_memory()
         plant_name = ftp_path.split('/')[-1]
         print(plant_name)
         local_path = download_item(ftp_path=ftp_path, temp_path=temp_path, plant_name=plant_name)
@@ -143,9 +143,17 @@ def ftp_downloader(database, temp_path, out_path):
 
 
 def main():
-    ftp_downloader(database='genomes/genbank/plant/',
-                   temp_path='/home/b/PycharmProjects/bap_data/temporary/',
-                   out_path='/home/b/PycharmProjects/bap_data/genbank/')
+    ftp_downloader(database='genomes/genbank/vertebrate_mammalian/',
+                   temp_path='/home/b/PycharmProjects/bap_data/temporary/vertebrate_mammalian/',
+                   out_path='/home/b/PycharmProjects/bap_data/genbank/vertebrate_mammalian/')
+
+    # ftp_downloader(database='genomes/genbank/plant/',
+    #                temp_path='/home/b/PycharmProjects/bap_data/temporary/plant/',
+    #                out_path='/home/b/PycharmProjects/bap_data/genbank/plant/')
+
+    # ftp_downloader(database='genomes/genbank/invertebrate/',
+    #                temp_path='/home/b/PycharmProjects/bap_data/temporary/invertebrate/',
+    #                out_path='/home/b/PycharmProjects/bap_data/genbank/invertebrate/')
 
 
 if __name__ == '__main__':
