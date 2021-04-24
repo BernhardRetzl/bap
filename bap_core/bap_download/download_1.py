@@ -13,7 +13,8 @@ date = str(datetime.datetime.now()).split(' ')[0]
 def check_for_memory():
     while True:
         memory = psutil.virtual_memory().percent
-        if memory < 35:
+        print(memory)
+        if memory < 50:
             return
         print('Sleeping')
         time.sleep(300)
@@ -75,7 +76,6 @@ def unzip_item(local_path):
 def translate(local_path, plant_name, out_path):
     cys_rich_sequence_counter = 0
     not_cys_rich_sequence_counter = 0
-    to_write = []
     my_seq = SeqIO.parse(local_path, 'fasta')
     record_number = 0
     os.mkdir(out_path + os.sep + plant_name)
@@ -143,13 +143,13 @@ def ftp_downloader(database, temp_path, out_path):
 
 
 def main():
-    ftp_downloader(database='genomes/genbank/vertebrate_mammalian/',
-                   temp_path='/home/b/PycharmProjects/bap_data/temporary/vertebrate_mammalian/',
-                   out_path='/home/b/PycharmProjects/bap_data/genbank/vertebrate_mammalian/')
+    # ftp_downloader(database='genomes/genbank/vertebrate_mammalian/',
+    #                temp_path='/home/b/PycharmProjects/bap_data/temporary/vertebrate_mammalian/',
+    #                out_path='/home/b/PycharmProjects/bap_data/genbank/vertebrate_mammalian/')
 
-    # ftp_downloader(database='genomes/genbank/plant/',
-    #                temp_path='/home/b/PycharmProjects/bap_data/temporary/plant/',
-    #                out_path='/home/b/PycharmProjects/bap_data/genbank/plant/')
+    ftp_downloader(database='genomes/genbank/plant/',
+                   temp_path=os.sep.join(['G:', 'bap_data', 'temporary', 'plant', '']),
+                   out_path=os.sep.join(['G:', 'bap_data', 'genbank', 'plant', '']))
 
     # ftp_downloader(database='genomes/genbank/invertebrate/',
     #                temp_path='/home/b/PycharmProjects/bap_data/temporary/invertebrate/',
