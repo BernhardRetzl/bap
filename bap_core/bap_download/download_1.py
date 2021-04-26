@@ -30,9 +30,14 @@ def login_and_cwd(path):
 def next_ftp_path(database, out_path, temp_path):
     check_for_memory()
     plant_list = login_and_cwd(database).nlst()
+    print(plant_list)
     plant_list = [i for i in plant_list if '.txt' not in i]
     already_done_list = [i.split(os.sep)[-1] for i in glob.glob(out_path+'*')] +\
-                        [i.split(os.sep)[-1] for i in glob.glob(temp_path + '*')]
+                        [i.split(os.sep)[-1] for i in glob.glob(temp_path + '*')] +\
+                        [i.split(os.sep)[-1]+'.' for i in glob.glob(temp_path + '*')] + \
+                        [i.split(os.sep)[-1]+'.' for i in glob.glob(out_path + '*')]
+
+    print(already_done_list)
 
     plant_list = sorted([i for i in plant_list if i not in already_done_list])
     print(len(plant_list))
@@ -148,8 +153,8 @@ def main():
     #                out_path='/home/b/PycharmProjects/bap_data/genbank/vertebrate_mammalian/')
 
     ftp_downloader(database='genomes/genbank/plant/',
-                   temp_path=os.sep.join(['G:', 'bap_data', 'temporary', 'plant', '']),
-                   out_path=os.sep.join(['G:', 'bap_data', 'genbank', 'plant', '']))
+                   temp_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'temporary', 'plant', '']),
+                   out_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'genbank', 'plant', '']))
 
     # ftp_downloader(database='genomes/genbank/invertebrate/',
     #                temp_path='/home/b/PycharmProjects/bap_data/temporary/invertebrate/',
