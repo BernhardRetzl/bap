@@ -38,7 +38,6 @@ def next_ftp_path(database, out_path, temp_path):
                         [i.split(os.sep)[-1]+'.' for i in glob.glob(out_path + '*')]
 
     print(already_done_list)
-
     plant_list = sorted([i for i in plant_list if i not in already_done_list])
     print(len(plant_list))
     if plant_list:
@@ -152,9 +151,14 @@ def main():
     #                temp_path='/home/b/PycharmProjects/bap_data/temporary/vertebrate_mammalian/',
     #                out_path='/home/b/PycharmProjects/bap_data/genbank/vertebrate_mammalian/')
 
+    # ftp_downloader(database='genomes/genbank/plant/',
+    #                temp_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'temporary', 'plant', '']),
+    #                out_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'genbank', 'plant', '']))
+
     ftp_downloader(database='genomes/genbank/plant/',
-                   temp_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'temporary', 'plant', '']),
-                   out_path=os.sep.join(['', 'media', 'b', 'INTENSO', 'bap_data', 'genbank', 'plant', '']))
+                   temp_path=r'C:\Users\b\PycharmProjects\bap_data\test_data\temporary\plant\\',
+                   out_path=r'C:\Users\b\PycharmProjects\bap_data\test_data\genbank\plant\\')
+
 
     # ftp_downloader(database='genomes/genbank/invertebrate/',
     #                temp_path='/home/b/PycharmProjects/bap_data/temporary/invertebrate/',
